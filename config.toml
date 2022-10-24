@@ -42,7 +42,7 @@ highlight_code = true
 
 [extra]
 # Put all your custom variables here
-author = "funless"
+author = "funlessdev"
 github = "https://github.com/funlessdev"
 twitter = "https://twitter.com/funlessdev"
 # email = "aaranxu@outlook.com"
