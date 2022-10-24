@@ -34,7 +34,7 @@ content = "Use the CLI to deploy either locally or on a k8s cluster with just on
 
 [[extra.list]]
 title = "Web Assembly Runtimes"
-content = "Your functions are run as Web Assembly modules. It's lightining fast, with 0 cold starts delays."
+content = "Your functions are run as Web Assembly modules. It's lightining fast, with 0 cold start delays."
 
 [[extra.list]]
 title = "Elixir & Rust based"
