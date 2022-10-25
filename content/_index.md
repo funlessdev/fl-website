@@ -18,11 +18,11 @@ section = "docs"
 url = "/docs/getting-started/introduction/"
 weight = 10
 
-# [[extra.menu.main]]
-# name = "Blog"
-# section = "blog"
-# url = "/blog/"
-# weight = 20
+[[extra.menu.main]]
+name = "Blog"
+section = "blog"
+url = "/blog/"
+weight = 20
 
 [[extra.list]]
 title = "Free and Open Source"
