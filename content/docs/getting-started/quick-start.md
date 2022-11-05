@@ -14,7 +14,9 @@ toc = true
 top = false
 +++
 
-## Requirements
+Coming Soon...
+
+<!-- ## Requirements
 
 Before using the theme, you need to install the [Zola](https://www.getzola.org/documentation/getting-started/installation/) ≥ 0.15.0.
 
@@ -91,4 +93,4 @@ zola serve
 ```
 
 AdiDoks will start the Zola development web server accessible by default at 
-`http://127.0.0.1:1111`. Saved changes will live reload in the browser.
+`http://127.0.0.1:1111`. Saved changes will live reload in the browser. -->

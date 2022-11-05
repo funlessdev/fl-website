@@ -7,25 +7,27 @@ draft = false
 weight = 10
 sort_by = "weight"
 template = "docs/page.html"
-
-[extra]
-lead = 'FunLess is a new generation, research-driven serverless platform focused on speed and ease of use. Built with Elixir and Rust to bring you the most scalable and innovative FaaS solution.'
-toc = true
-top = false
 +++
 
-## Quick Start
+FunLess includes capabilities for building and deploying applications from source, composed of stateless functions, that can scale automatically. Connect events from external systems that can trigger function invocations and create workflows by pipelining your functions. 
 
-One page summary of how to start using FunLess. [Quick Start →](../quick-start/)
+All of this easily deployed over Kubernetes or Nomad, or standalone, with the simple-to-use command line tool.
 
-## Go further
+Under the hood, FunLess takes advantage of several modern technologies like Elixir, Rust and WebAssembly to provide a light, secure and fast experience to run your serverless applications.
 
-Contributing and Help.
+Our goal is to provide a new FaaS platform to take advantage of modern technologies, ease of deployment and learn new things!
+
+## Getting Started
+
+To get started with FunLess, follow our [Quick Start →](../quick-start/)
+
+## Project Status
+
+FunLess is experimental code, however it is deployable locally for you to try out and provide feedback or contribute.
 
 ## Contributing
 
 Find out how to contribute to FunLess. [Contributing →](../../contributing/how-to-contribute/)
 
-## Help
 
-Get some FunLess help. [Help →](../../help/faq/)
+## About the Team
