@@ -7,9 +7,9 @@ title = "The FunLess docs"
 lead = '<b>FunLess</b> is a new generation, research-driven serverless platform focused on speed and ease of use.'
 url = "/docs/getting-started/introduction/"
 url_button = "Get started"
-repo_version = "GitHub v0.3.0"
+repo_version = "GitHub v0.4.0"
 repo_license = "Open-source Apache 2.0 License."
-repo_url = "https://github.com/funlessdev/funless-docs"
+repo_url = "https://github.com/funlessdev"
 
 # Menu items
 [[extra.menu.main]]

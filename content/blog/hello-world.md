@@ -3,7 +3,7 @@ title = "Hello World"
 description = "Introducing FunLess, a new FaaS platform that makes it easy to create distributed, fast and scalable apps."
 date = 2021-05-01T09:19:42+00:00
 updated = 2021-05-01T09:19:42+00:00
-draft = false
+draft = true
 template = "blog/page.html"
 
 [taxonomies]
