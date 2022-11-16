@@ -19,7 +19,7 @@ Our goal is to provide a new FaaS platform to take advantage of modern technolog
 
 ## Getting Started
 
-To get started with FunLess, follow our [Quick Start →](quick-start)
+To get started with FunLess, follow our [Quick Start →](../quick-start/)
 
 ## Project Status
 
