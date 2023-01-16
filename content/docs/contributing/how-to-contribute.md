@@ -18,26 +18,20 @@ top = false
 
 👉 The FunLess code lives in the [`funlessdev` organization](https://github.com/funlessdev/)
 
-We have several repositories for the different parts of the system.
+We have several repositories for the different parts of the system, with a lot of stuff to do.
 
-Coming Soon...
+If you want to partecipate and have fun with Elixir, Rust, Go, WebAssembly and Serverless you are very welcome!
 
-- Follow the [GitHub flow](https://guides.github.com/introduction/flow/).
-- Follow the [Conventional Commits Specification](https://www.conventionalcommits.org/en/v1.0.0/)
+You can contribute in many different ways. Either help us design the system, contribute code, open issues, write documentation 
+or just use FunLess for something!
 
-### Create an issue
+Our workflow is to fork a repo, work on it and open a Pull Request. Each PR has to pass all the checks and have at least 1 approval 
+from a reviewer. 
 
-Coming Soon...
+The way to get started is opening issues:
 
-- [Bug report](https://github.com/funlessdev/issues/new?template=bug-report---.md)
-- [Feature request](https://github.com/funlessdev/issues/new?template=feature-request---.md)
+- If you want to work on something or have any comments, just open an issue on the [main repo](https://github.com/funlessdev/funless).
 
-## Improve documentation
+- If it is related to the cli and Go ---> [repo here](https://github.com/funlessdev/fl-cli). 
 
-👉 The documentation lives in [`./content/docs/`](https://github.com/funlessdev/fl-website/tree/master/content/docs)
-of the [`fl-website` repository](https://github.com/funlessdev/fl-website).
-
-Coming Soon...
-
-- Follow the [GitHub flow](https://guides.github.com/introduction/flow/).
-- Follow the [Conventional Commits Specification](https://www.conventionalcommits.org/en/v1.0.0/)
+- If you want to add docs and content to this website ---> [repo here](https://github.com/funlessdev/fl-website)
