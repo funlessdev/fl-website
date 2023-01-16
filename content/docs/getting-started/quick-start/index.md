@@ -23,10 +23,10 @@ You can check out the [Releases page](https://github.com/funlessdev/fl-cli/relea
 
 Here are some quick links to download it:
 
-- [Linux amd64](https://github.com/funlessdev/fl-cli/releases/download/v0.2.1/fl-v0.2.1-linux-amd64.tar.gz)
-- [Linux arm64](https://github.com/funlessdev/fl-cli/releases/download/v0.2.1/fl-v0.2.1-linux-arm64.tar.gz)
-- [Mac amd64](https://github.com/funlessdev/fl-cli/releases/download/v0.2.1/fl-v0.2.1-darwin-amd64.tar.gz)
-- [Mac arm64](https://github.com/funlessdev/fl-cli/releases/download/v0.2.1/fl-v0.2.1-darwin-arm64.tar.gz)
+- [Linux amd64](https://github.com/funlessdev/fl-cli/releases/download/v0.3.0/fl-v0.3.0-linux-amd64.tar.gz)
+- [Linux arm64](https://github.com/funlessdev/fl-cli/releases/download/v0.3.0/fl-v0.3.0-linux-arm64.tar.gz)
+- [Mac amd64](https://github.com/funlessdev/fl-cli/releases/download/v0.3.0/fl-v0.3.0-darwin-amd64.tar.gz)
+- [Mac arm64](https://github.com/funlessdev/fl-cli/releases/download/v0.3.0/fl-v0.3.0-darwin-arm64.tar.gz)
 
 
 Extract the executable from the archive and you can start using fl.
@@ -37,15 +37,16 @@ Extract the executable from the archive and you can start using fl.
 ⚠️ You need to have [Docker](https://docs.docker.com/get-docker/) installed for this! ⚠️
 
 You can use the CLI tool to deploy the platform locally using Docker containers. 
+It uses `docker compose` internally so it's a hard requirement to have a recent version of Docker.
 
-The CLI will pull and launch 3 containers, one for the **Core** component, one for the **Worker** and one for **Prometheus**. 
-It will handle the network between them and will remove everything when you are done.
+The CLI will pull and launch 4 containers, one for the **Core** component, one for the **Worker**, one for **Prometheus** and one for **Postgres**. 
+You can remove everything using the cli again.
 
 ```bash
-fl admin dev
+fl admin docker deploy up
 ```
 
-<img src="./img/fl_admin_dev.gif" style="width: 100%;" />
+<img src="./img/docker_up.gif" style="width: 100%;" />
 
 Now that FunLess is running, you can start deploying and running functions.
 
@@ -55,13 +56,12 @@ FunLess uses [WebAssembly](https://webassembly.org/) runtimes via [Wasmtime](htt
 As of now we support *Rust* and *JavaScript*, but we are working on adding more languages.
 
 The CLI tool already handles the compiling into WebAssembly for you, so you can focus on writing your function.
+As of now it handles functions as projects, not single file functions. For example let's create a simple function that returns the current time, using Javascript. This means we need a folder with a `package.json` and an `index.js` with the code.
 
-Let's try to create a simple function that returns the current time, using Javascript.
-
-First of all create a new folder for our function, let's call it `fun_time`. Inside we can add an `index.js` file:
+Let's create a new folder `fun_time`. Inside we can run `npm init -y` to generate a `package.json` and we create an `index.js` file:
 
 ```js
-// time_function/index.js
+// fun_time/index.js
 function handler() {
   return new Date().toISOString();
 }
@@ -74,18 +74,18 @@ Remember to add a `fl_main` export to your function, this is the entry point tha
 Now you can create the function. In the example we are naming it `time`:
 
 ```bash
-fl fn create time --source-dir fun_time --language js
+fl fn create time fun_time --language js
 ```
 
-With `--source-dir` you are telling the CLI where to find the source code for the function, and `--language` is the language you are using.
-
-With this simple function we are not using a `package.json`, but you can add one if you want to use dependencies.
-
+The first argument of the create subcommand is the name of the function inside FunLess, the second is the path to the directory with the code. There are other commands like `build` that only builds the wasm file and saves it, `upload` that takes a wasm file and uses it to create a function in the platform. The `create` command is a combination of both, but after the function creation it deletes the wasm file so your pc stays clean. At last the `--language` is the programming language of the code.
 
 <img src="./img/fl_create.gif" style="width: 100%;" />
 
 ## Invoke the function
 
+# The Rest Is Coming Soon. Everything is broken until release v0.7 
+
+<!-- 
 Now you can invoke it. This function takes no arguments, so we can just call it:
 
 ```bash
@@ -123,22 +123,23 @@ Now invoke it with the `-j` flag to pass a JSON object as input:
 fl fn invoke hello -j '{"name": "FunLess"}'
 ```
 
-<img src="./img/fl_invoke_args.gif" style="width: 100%;" />
+<img src="./img/fl_invoke_args.gif" style="width: 100%;" /> -->
 
 
-## Delete the function
+<!-- ## Delete the function
 
 You can delete the function with:
 
 ```bash
-fl fn delete hello
-```
+fl fn delete hello 
+``` -->
 
 ## Cleaning up
 
 When you are done, you can remove the containers and cleanup the dev deployment with:
 
 ```bash
-fl admin reset
+fl admin docker deploy down
 ```
-<img src="./img/fl_admin_reset.gif" style="width: 100%;" />
+
+<img src="./img/docker_down.gif" style="width: 100%;" />
