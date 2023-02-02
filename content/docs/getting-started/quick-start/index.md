@@ -46,7 +46,7 @@ You can remove everything using the cli again.
 fl admin docker deploy up
 ```
 
-<img src="./img/docker_up.gif" style="width: 100%;" />
+<!-- <img src="./img/docker_up.gif" style="width: 100%;" /> -->
 
 Now that FunLess is running, you can start deploying and running functions.
 
@@ -56,83 +56,60 @@ FunLess uses [WebAssembly](https://webassembly.org/) runtimes via [Wasmtime](htt
 As of now we support *Rust* and *JavaScript*, but we are working on adding more languages.
 
 The CLI tool already handles the compiling into WebAssembly for you, so you can focus on writing your function.
-As of now it handles functions as projects, not single file functions. For example let's create a simple function that returns the current time, using Javascript. This means we need a folder with a `package.json` and an `index.js` with the code.
+As of now it handles functions as projects, not single file functions.
 
-Let's create a new folder `fun_time`. Inside we can run `npm init -y` to generate a `package.json` and we create an `index.js` file:
-
-```js
-// fun_time/index.js
-function handler() {
-  return new Date().toISOString();
-}
-
-module.exports.fl_main = handler;
-```
-
-Remember to add a `fl_main` export to your function, this is the entry point that FunLess will use to call your function.
-
-Now you can create the function. In the example we are naming it `time`:
+For example, let's create a new function using the `fn new` cli command. We will use Rust. From a folder of your choosing, run:
 
 ```bash
-fl fn create time fun_time --language js
+fl fn new hello_funless -l rust
+``` 
+<!-- <img src="./img/fl_new_hello.gif" style="width: 100%;" /> -->
+
+This will download the template folder which contains the Rust and Javascript templates, and use the Rust template
+to create a new project named hello. The folder hello will contain a Cargo.toml and a lib.rs with the `fl_main` function, 
+which you can fill with your code.
+
+The template function takes a json of the form `{"name": "FunLess"}` and returns a `{"payload": "Hello FunLess"}`. You can change it to your liking.
+
+Now you can build and deploy it to FunLess. The `create` subcommand will take care of both building and uploading.
+
+```bash
+fl fn create hello hello/ --language rust
 ```
 
 The first argument of the create subcommand is the name of the function inside FunLess, the second is the path to the directory with the code. There are other commands like `build` that only builds the wasm file and saves it, `upload` that takes a wasm file and uses it to create a function in the platform. The `create` command is a combination of both, but after the function creation it deletes the wasm file so your pc stays clean. At last the `--language` is the programming language of the code.
 
-<img src="./img/fl_create.gif" style="width: 100%;" />
-
-## Invoke the function
-
-# The Rest Is Coming Soon. Everything is broken until release v0.7 
-
-<!-- 
-Now you can invoke it. This function takes no arguments, so we can just call it:
+In FunLess  each `function` is part of a `module` (you can think of them as namespaces from the C family of languages, or packages). 
+Every FunLess instance has a default `_` module, so if you don't create a new module (with the `mod` subcommand) and specify it when creating functions, they will be created in the `_` module. You can get info about a module with its list of function with:
 
 ```bash
-fl fn invoke time
+fl mod get _
 ```
 
-<img src="./img/fl_invoke.gif" style="width: 100%;" />
+<!-- <img src="./img/fl_create.gif" style="width: 100%;" /> -->
 
-## Invoke with arguments
+## Invoke it
 
-Let's create a function that takes a `name` argument, and returns a greeting. Create a folder named `hello` and add an `index.js` file:
-
-```js
-// hello/index.js
-function fl_main(input) {
-  let name = input.name || "World";
-  return { body: `Hello ${name}!`}
-}
-
-module.exports.fl_main = fl_main;
-
-```
-
-As before, deploy the function:
-
-```bash
-fl fn create hello -d hello -l js
-```
-
-Note that you can use `-d` instead of `--source-dir` and `-l` instead of `--language` as shortcuts.
-
-Now invoke it with the `-j` flag to pass a JSON object as input:
+Now you can invoke it. Since the function takes a json argument, you can use the `-j` flag to pass the JSON object with the 'name' key as input: 
 
 ```bash
 fl fn invoke hello -j '{"name": "FunLess"}'
 ```
 
-<img src="./img/fl_invoke_args.gif" style="width: 100%;" /> -->
+If everything worked correctly, the invocation request will be received by the core component, passed to the worker componend and the wasm
+function will be executed. The result will be returned to the core component and then to the CLI, which will print it to the console.
 
 
-<!-- ## Delete the function
+<!-- <img src="./img/fl_invoke.gif" style="width: 100%;" /> -->
+
+
+## Delete it
 
 You can delete the function with:
 
 ```bash
 fl fn delete hello 
-``` -->
+```
 
 ## Cleaning up
 
@@ -142,4 +119,4 @@ When you are done, you can remove the containers and cleanup the dev deployment 
 fl admin docker deploy down
 ```
 
-<img src="./img/docker_down.gif" style="width: 100%;" />
+<!-- <img src="./img/docker_down.gif" style="width: 100%;" /> -->
