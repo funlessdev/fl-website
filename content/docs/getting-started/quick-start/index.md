@@ -55,8 +55,7 @@ Now that FunLess is running, you can start deploying and running functions.
 FunLess uses [WebAssembly](https://webassembly.org/) runtimes via [Wasmtime](https://wasmtime.dev/) to run your functions.
 As of now we support *Rust* and *JavaScript*, but we are working on adding more languages.
 
-The CLI tool already handles the compiling into WebAssembly for you, so you can focus on writing your function.
-As of now it handles functions as projects, not single file functions.
+The CLI tool already handles the compiling into WebAssembly for you, so you can focus on writing your functions.
 
 For example, let's create a new function using the `fn new` cli command. We will use Rust. From a folder of your choosing, run:
 

@@ -23,7 +23,9 @@ To get started with FunLess, follow our [Quick Start →](../quick-start/)
 
 ## Project Status
 
-FunLess is experimental code, however it is deployable locally for you to try out and provide feedback or contribute.
+FunLess is experimental code, however it is deployable locally for you to try out and provide feedback or contribute. 
+There is still a ton of work to do, but it is taking shape and we are excited to share it with you. We plan
+to have the best Cloud-Edge serverless platform out there, so any help is welcome!
 
 ## Contributing
 
