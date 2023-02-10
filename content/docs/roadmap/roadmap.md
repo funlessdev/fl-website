@@ -63,3 +63,4 @@ Because of this, usability and frontend-focused additions may fall behind in pri
 
 - Low-Code platform
 - More connectors/data-sinks (Amazon S3, MySql, Google Cloud Storage...)
+- Better Kubernetes integration with CRDs/Secrets/etc
