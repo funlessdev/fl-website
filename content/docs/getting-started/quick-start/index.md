@@ -43,7 +43,7 @@ The CLI will pull and launch 4 containers, one for the **Core** component, one f
 You can remove everything using the cli again.
 
 ```bash
-fl admin docker deploy up
+fl admin deploy docker up
 ```
 
 <!-- <img src="./img/docker_up.gif" style="width: 100%;" /> -->
