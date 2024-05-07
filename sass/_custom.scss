@@ -1,0 +1,20 @@
+body .light-img,
+body .dark-img {
+    max-width: 100%;
+}
+
+body .light-img {
+    display: block;
+}
+
+body .dark-img {
+    display: none;
+}
+
+body.dark .light-img {
+    display: none;
+}
+
+body.dark .dark-img {
+    display: block;
+}
