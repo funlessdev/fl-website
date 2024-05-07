@@ -8,3 +8,5 @@ weight = 1
 sort_by = "weight"
 template = "docs/page.html"
 +++
+
+![Diagram of the FunLess architecture. Contains both components and data-flow.](img/architecture_diagram.pdf)
