@@ -49,45 +49,7 @@ If the "b" path was taken in step 9, the request proceeds:
 
 10. The Core sends the same request as before to the Worker, adding the function's code this time
 11. The Worker caches the function's code, after a pre-compilation phase[^3] (more on that on the [Worker](../worker) description)
-12. The Worker runs the function, and returns its result to the Core. The workflow terminates here. 
-
-
-
-
-<!-- Looking at the steps reported in Fig. 1, once the Core receives
-the request to create a function (1. Upload), it stores its binary in
-the database (2. Store). Fetch, update, and deletion happen via the
-assigned function name. When the Core successfully creates a
-function, it notifies the Workers (3. Broadcast) to store a local copy
-of the function binary (4. Cache) compiled from the source code
-with the given metadata (i.e., module and function names). This
-push strategy helps to reduce part of the overhead of cold starts.
-Indeed, most FaaS platforms follow a pull policy where, if the
-execution nodes do not have the function in their cache (e.g., it is
-the first time they execute), they fetch, cache, and load the code
-of the function, undergoing latency. The small occupancy of Wasm
-binaries makes it affordable for FunLess to employ a push strategy,
-helping to reduce cold-start overheads.
-Since both the Core and the Workers run on the BEAM, these
-components communicate via the BEAM’s built-in lightweight
-distributed inter-process messaging system, avoiding the need
-(complexity, weight) for additional dependencies for data formatting,
-transmission, and component connection.
-When a function invocation reaches the Core (5. Invoke), the
-latter checks the existence of the function in the database and
-retrieves its code (6. Retrieve). If the function is present in the
-database, the Core uses the most recent metrics—we represent the
-pushing of the data, updated every 5s by default, from Prometheus
-to the Core with the dashed line in Fig. 1—to select on which of
-the available Workers to allocate the function (7. Request). The
-selection algorithm starts from the Worker with the largest amount
-of free memory to the one with the smaller. If no worker has enough
-memory to host the function, the invocation will return with an error.
-After the Worker successfully ran the function (we detail this part
-of the workflow in the section about Workers, below) it sends back
-to the Core the result (if any), which the Core relays back to the
-user (10a/13b. Reply). If no Worker is available at scheduling time
-or there are errors during the execution, the Core returns an error. -->
+12. The Worker runs the function, and returns its result to the Core. The workflow terminates here.
 
 ---
 
