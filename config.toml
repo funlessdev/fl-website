@@ -18,7 +18,7 @@ minify_html = false
 
 # The taxonomies to be rendered for the site and their configuration.
 taxonomies = [
-  {name = "authors"}, # Basic definition: no feed or pagination
+  { name = "authors" }, # Basic definition: no feed or pagination
 ]
 
 # Whether to build a search index to be used later on by a JavaScript library
@@ -57,7 +57,7 @@ language_code = "en-US"
 theme_color = "#ffffff"
 
 # More about site's title
-title_separator = "|"  # set as |, -, _, etc
+title_separator = "|"            # set as |, -, _, etc
 title_addition = "Documentation"
 
 
@@ -73,8 +73,8 @@ repo_branch = "main"
 ## Math settings
 # options: true, false. Enable math support globally,
 # default: false. You can always enable math on a per page.
-math = false
-library = "katex"  # options: "katex", "mathjax". default is "katex".
+math = true
+library = "katex" # options: "katex", "mathjax". default is "katex".
 
 ## Open Graph + Twitter Cards
 [extra.open]
@@ -92,7 +92,7 @@ logo = "logo-doks.png"
 twitter = "https://twitter.com/funlessdev"
 linked_in = ""
 github = "https://github.com/funlessdev"
-section = "blog" # see config.extra.main~url
+section = "blog"                           # see config.extra.main~url
 ## Sitelinks Search Box
 site_links_search_box = false
 
