@@ -51,6 +51,11 @@ If the "b" path was taken in step 9, the request proceeds:
 11. The Worker caches the function's code, after a pre-compilation phase[^3] (more on that on the [Worker](../worker) description)
 12. The Worker runs the function, and returns its result to the Core. The workflow terminates here.
 
+
+### Note on connectivity
+
+As of right now, FunLess relies on the [libcluster](https://github.com/bitwalker/libcluster) library to automatically connect all nodes in a single cluster, whether on top of an orchestrator or not. That being said, it is still possible to manually connect nodes to the cluster using the `Node.connect` function of the Elixir language. The nodes must be visible to each other **without NAT** to ensure the communication works[^4].
+
 ---
 
 [^1]: At the time of writing, FunLess only supports single-Core deployments. Support for multiple cores is being worked on. In such deployments, both the database and the metric system would probably be replicated and co-located with each Core instance.
@@ -58,3 +63,5 @@ If the "b" path was taken in step 9, the request proceeds:
 [^2]: FunLess does not currently support multi-tenancy, therefore the database only contains information about functions and modules. User information will be handled generally in the same way.
 
 [^3]: For simplicity, the distinction between storing the code as-is and cache the pre-compiled code is not shown in the diagram. In case the pre-compiled code is not found, but the "raw" code is already in storage, the Worker simply performs the pre-compilation step and caches the result, without talking to the Core. The "raw" code is never used for function invocation, only the pre-compiled version is.
+
+[^4]: A more thorough guide on how to configure the network and deploy FunLess without an orchestrator can be found [here](../../getting-started/bare-metal).

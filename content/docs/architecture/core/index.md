@@ -35,6 +35,8 @@ To give a very simple description of the workflow of an invocation:
 
 Since step 4 might fail (if, e.g., no metrics have ever been retrieved for any Worker ever because of network issues), if no metrics are retrieved, a random Worker is selected, regardless of the scheduling policy. This is of course a last resort to avoid invocation failure, and might be subject to change in the future (if we find invocation failure to be a more reliable/sound approach).
 
+The default policy, as of right now, is to select the Worker with the highest amount of memory available.
+
 #### Policies
 
 FunLess is built to accept different scheduling policies, depending on the associated configuration to each function. This means that it's relatively easy to extend the Core with a new policy, provided that an implementation is provided for the `SchedulingPolicy` protocol (and therefore, an appropriate data type for the relevant configuration).
@@ -42,74 +44,10 @@ FunLess is built to accept different scheduling policies, depending on the assoc
 Policies are simply functions with the following signature:
 
 $$
-(t, [Worker], Function) -> Worker
+(t, [Worker], Function) \rightarrow Worker
 $$
 
 Where $t$ is the configuration type, and $[Worker]$ means a list of "enriched" Workers. Therefore, a policy simply returns a Worker, given a configuration, the available nodes, and the function being invoked.
-
-<!-- The Core is the controller of the platform. It exposes an HTTP
-REST API to the users, handles authentication and authorization,
-and manages functions’ lifecycle and invocations.
-Although the Core implements the main coordination logic
-and functionalities of FunLess, it is a lightweight component. For
-instance, on a Raspberry Pi 3B+ its local bare-metal deployment
-(that includes the database, the monitoring system and the
-underlying operating system and services) occupies ca. 600 MB
-of RAM when idle.
-Functionality-wise, FunLess users create a new function by
-compiling its source code to Wasm—using either the language’s
-default compiler (for Rust), an alternative one (for Go), or an external
-tool (for JavaScript)—and uploading the resulting binary to the
-Core, assigning to it a name. Users can group functions in modules
-and, when uploading a function, they can optionally specify which
-module the function belongs to. Moreover, users should also specify
-the amount of memory reserved for the execution of the function.
-Looking at the steps reported in Fig. 1, once the Core receives
-the request to create a function (1. Upload), it stores its binary in
-the database (2. Store). Fetch, update, and deletion happen via the
-assigned function name. When the Core successfully creates a
-function, it notifies the Workers (3. Broadcast) to store a local copy
-of the function binary (4. Cache) compiled from the source code
-with the given metadata (i.e., module and function names). This
-push strategy helps to reduce part of the overhead of cold starts.
-Indeed, most FaaS platforms follow a pull policy where, if the
-execution nodes do not have the function in their cache (e.g., it is
-the first time they execute), they fetch, cache, and load the code
-of the function, undergoing latency. The small occupancy of Wasm
-binaries makes it affordable for FunLess to employ a push strategy,
-helping to reduce cold-start overheads.
-Since both the Core and the Workers run on the BEAM, these
-components communicate via the BEAM’s built-in lightweight
-distributed inter-process messaging system, avoiding the need
-(complexity, weight) for additional dependencies for data formatting,
-transmission, and component connection.
-When a function invocation reaches the Core (5. Invoke), the
-latter checks the existence of the function in the database and
-retrieves its code (6. Retrieve). If the function is present in the
-database, the Core uses the most recent metrics—we represent the
-pushing of the data, updated every 5s by default, from Prometheus
-to the Core with the dashed line in Fig. 1—to select on which of
-the available Workers to allocate the function (7. Request). The
-selection algorithm starts from the Worker with the largest amount
-of free memory to the one with the smaller. If no worker has enough
-memory to host the function, the invocation will return with an error.
-After the Worker successfully ran the function (we detail this part
-of the workflow in the section about Workers, below) it sends back
-to the Core the result (if any), which the Core relays back to the
-user (10a/13b. Reply). If no Worker is available at scheduling time
-or there are errors during the execution, the Core returns an error.
-Another important feature of FunLess is that the Core can
-automatically discover the Workers in its same network. This feature
-derives from Elixir’s libcluster library8, which provides a mechanism
-for automatically forming clusters of BEAM/Erlang nodes. Techni-
-cally, when deployed on bare metal, FunLess follows the Multicast
-UDP Gossip algorithm of the library, to automatically find available
-workers. Instead, when deployed using Kubernetes, FunLess relies
-on the service discovery capabilities of the container orchestration
-engine to connect the Core with the Workers, paired with the “Kuber-
-netes” modality of the library. Users can manually connect Workers
-from other networks via a simple message (e.g., a ping) thanks to
-the BEAM’s built-in capability of connecting to other BEAM nodes. -->
 
 ---
 
