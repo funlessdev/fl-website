@@ -47,7 +47,7 @@ $$
 (t, [Worker], Function) \rightarrow Worker
 $$
 
-Where $t$ is the configuration type, and $[Worker]$ means a list of "enriched" Workers. Therefore, a policy simply returns a Worker, given a configuration, the available nodes, and the function being invoked.
+Where \\(t\\) is the configuration type, and \\([Worker]\\) means a list of "enriched" Workers. Therefore, a policy simply returns a Worker, given a configuration, the available nodes, and the function being invoked.
 
 ---
 

@@ -33,7 +33,9 @@ To produce FunLess-compatible modules, we currently use language-specific wrappe
     - pointer and length of the URL
     - pointer and length of the headers, codified as a string
     - pointer and length of the body
-This function will probably be scrapped, as the WASI standard has recenly included HTTP requests and socket operations, so there will be no need for a custom import.
+
+    This function will probably be scrapped, as the WASI standard has recenly included HTTP requests and socket operations, so there will be no need for a custom import.
+    
 - `__console_log` is a debugging function, to be removed in the future (or at least disabled in production environments). Prints the given string (identified by two integers, a pointer to the message and its length) as a debugging log on the Worker. 
 
 #### Exported functions
