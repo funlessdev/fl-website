@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>FunLess</title>
+    <subtitle>Funless is a new generation, research-driven serverless platform.</subtitle>
+    <link rel="self" type="application/atom+xml" href="https://funless.dev/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://funless.dev"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2024-05-06T08:20:00+00:00</updated>
+    <id>https://funless.dev/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Core</title>
+        <published>2024-05-06T08:20:00+00:00</published>
+        <updated>2021-05-01T08:20:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://funless.dev/docs/architecture/core/"/>
+        <id>https://funless.dev/docs/architecture/core/</id>
+        
+        <content type="html" xml:base="https://funless.dev/docs/architecture/core/">&lt;p&gt;The Core plays two separate roles in FunLess&#x27; architecture:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;It&#x27;s the main entrypoint, that is, it handles all requests coming from the outside&lt;&#x2F;li&gt;
+&lt;li&gt;It&#x27;s the platform&#x27;s central scheduler, and dispatches each function invocation to an appropriate worker&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;In a way, communication within FunLess can be separated according to these roles: it either goes from the user to the Core, or from the Core to the Workers.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;as-the-entrypoint&quot;&gt;As the entrypoint&lt;&#x2F;h3&gt;
+&lt;p&gt;The Core contains an HTTP server, developed using the &lt;a href=&quot;https:&#x2F;&#x2F;www.phoenixframework.org&#x2F;&quot;&gt;Phoenix&lt;&#x2F;a&gt; framework. It exposes a REST API, which allow users to perform CRUD operations on several &lt;a href=&quot;..&#x2F;entities&#x2F;&quot;&gt;entities&lt;&#x2F;a&gt;&lt;sup class=&quot;footnote-reference&quot;&gt;&lt;a href=&quot;#1&quot;&gt;1&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;When a function is created, the Core also forwards its code to all Workers, to mitigate potential cold starts caused by network delays. Workers are also notified when functions are updated (prompting them to replace their version of the code with a new one) or deleted (prompting them to remove the function&#x27;s code from their local storage).&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;as-the-scheduler&quot;&gt;As the scheduler&lt;&#x2F;h3&gt;
+&lt;p&gt;The Core also acts as the scheduler of the platform, that is, it forwards each invocation request to a suitable worker.&lt;&#x2F;p&gt;
+&lt;p&gt;To give a very simple description of the workflow of an invocation:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;The Core receives a POST request to invoke a certain function&lt;&#x2F;li&gt;
+&lt;li&gt;The function&#x27;s definition is retrieved from the database&lt;&#x2F;li&gt;
+&lt;li&gt;The Core retrieves all known Workers in the cluster&lt;&#x2F;li&gt;
+&lt;li&gt;The Core retrieves metrics for all these Workers&lt;&#x2F;li&gt;
+&lt;li&gt;The metrics are used to select the Worker that will receive the function, according to a specific &lt;a href=&quot;..&#x2F;entities&#x2F;&quot;&gt;policy&lt;&#x2F;a&gt; &lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;Since step 4 might fail (if, e.g., no metrics have ever been retrieved for any Worker ever because of network issues), if no metrics are retrieved, a random Worker is selected, regardless of the scheduling policy. This is of course a last resort to avoid invocation failure, and might be subject to change in the future (if we find invocation failure to be a more reliable&#x2F;sound approach).&lt;&#x2F;p&gt;
+&lt;p&gt;The default policy, as of right now, is to select the Worker with the highest amount of memory available.&lt;&#x2F;p&gt;
+&lt;h4 id=&quot;policies&quot;&gt;Policies&lt;&#x2F;h4&gt;
+&lt;p&gt;FunLess is built to accept different scheduling policies, depending on the associated configuration to each function. This means that it&#x27;s relatively easy to extend the Core with a new policy, provided that an implementation is provided for the &lt;code&gt;SchedulingPolicy&lt;&#x2F;code&gt; protocol (and therefore, an appropriate data type for the relevant configuration).&lt;&#x2F;p&gt;
+&lt;p&gt;Policies are simply functions with the following signature:&lt;&#x2F;p&gt;
+&lt;p&gt;$$
+(t, [Worker], Function) \rightarrow Worker
+$$&lt;&#x2F;p&gt;
+&lt;p&gt;Where \(t\) is the configuration type, and \([Worker]\) means a list of &amp;quot;enriched&amp;quot; Workers. Therefore, a policy simply returns a Worker, given a configuration, the available nodes, and the function being invoked.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;div class=&quot;footnote-definition&quot; id=&quot;1&quot;&gt;&lt;sup class=&quot;footnote-definition-label&quot;&gt;1&lt;&#x2F;sup&gt;
+&lt;p&gt;Currently functions, modules and configuration scripts.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Entities</title>
+        <published>2024-05-06T08:20:00+00:00</published>
+        <updated>2021-05-01T08:20:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://funless.dev/docs/architecture/entities/"/>
+        <id>https://funless.dev/docs/architecture/entities/</id>
+        
+        <content type="html" xml:base="https://funless.dev/docs/architecture/entities/">&lt;h3 id=&quot;functions&quot;&gt;Functions&lt;&#x2F;h3&gt;
+&lt;h3 id=&quot;modules&quot;&gt;Modules&lt;&#x2F;h3&gt;
+&lt;h3 id=&quot;scheduling-policies&quot;&gt;Scheduling Policies&lt;&#x2F;h3&gt;
+&lt;h3 id=&quot;configuration-scripts&quot;&gt;Configuration Scripts&lt;&#x2F;h3&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Overview</title>
+        <published>2024-05-06T08:20:00+00:00</published>
+        <updated>2021-05-01T08:20:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://funless.dev/docs/architecture/overview/"/>
+        <id>https://funless.dev/docs/architecture/overview/</id>
+        
+        <content type="html" xml:base="https://funless.dev/docs/architecture/overview/">&lt;h3 id=&quot;funless-skeleton&quot;&gt;FunLess&#x27; skeleton&lt;&#x2F;h3&gt;
+&lt;p&gt;The architecture of FunLess consists of several components:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;The &lt;a href=&quot;https:&#x2F;&#x2F;funless.dev&#x2F;docs&#x2F;architecture&#x2F;overview&#x2F;.&#x2F;..&#x2F;core&quot;&gt;Core&lt;&#x2F;a&gt;, acting both and as the platform&#x27;s entrypoint and scheduler. The Core handles all incoming HTTP requests and forwards each invocation to an available node&lt;sup class=&quot;footnote-reference&quot;&gt;&lt;a href=&quot;#1&quot;&gt;1&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt;.&lt;&#x2F;li&gt;
+&lt;li&gt;The &lt;a href=&quot;https:&#x2F;&#x2F;funless.dev&#x2F;docs&#x2F;architecture&#x2F;overview&#x2F;.&#x2F;..&#x2F;worker&quot;&gt;Workers&lt;&#x2F;a&gt;, acting as function executors. Each Worker embeds a WebAssembly runtime and is responsible for running functions and recovering their results. Workers communicate with the Core to handle invocation requests. Moreover, each Worker holds the code for several functions in a local cache, reducing cold starts.&lt;&#x2F;li&gt;
+&lt;li&gt;A database (currently &lt;a href=&quot;https:&#x2F;&#x2F;www.postgresql.org&#x2F;&quot;&gt;Postgres&lt;&#x2F;a&gt;), holding all function information&lt;sup class=&quot;footnote-reference&quot;&gt;&lt;a href=&quot;#1&quot;&gt;1&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt;. The database is co-located on the same node as the Core, to minimise communication latency between the two&lt;sup class=&quot;footnote-reference&quot;&gt;&lt;a href=&quot;#2&quot;&gt;2&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt;. &lt;&#x2F;li&gt;
+&lt;li&gt;A monitoring system (currently &lt;a href=&quot;https:&#x2F;&#x2F;prometheus.io&#x2F;&quot;&gt;Prometheus&lt;&#x2F;a&gt;), scraping metrics from the Workers. The Core periodically queries the monitoring system to retrieve updated information on each Worker&#x27;s resource usage and status. Like the database, this component is also co-located with the Core&lt;sup class=&quot;footnote-reference&quot;&gt;&lt;a href=&quot;#2&quot;&gt;2&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt;.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;life-of-a-request&quot;&gt;Life of a request&lt;&#x2F;h3&gt;
+&lt;p&gt;A very simple representation of how FunLess processes requests can be seen in the following diagram:&lt;&#x2F;p&gt;
+&lt;img class=&quot;light-img&quot; alt=&quot;Diagram of the FunLess architecture. Contains both components and data-flow.&quot; src=&quot;img&#x2F;architecture_diagram_light.png&quot;&gt;
+&lt;img class=&quot;dark-img&quot; alt=&quot;Diagram of the FunLess architecture. Contains both components and data-flow.&quot; src=&quot;img&#x2F;architecture_diagram_dark.png&quot;&gt;
+&lt;p&gt;Following the diagram, a function creation requests generally consists of four steps:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;The user sends a request to the Core to create a function&lt;&#x2F;li&gt;
+&lt;li&gt;The function is stored in the database&lt;&#x2F;li&gt;
+&lt;li&gt;The Core sends the function&#x27;s code to all connected Workers&lt;&#x2F;li&gt;
+&lt;li&gt;Each Worker saves the code as-is in its local storage (whether in-memory or on a persistent medium)&lt;sup class=&quot;footnote-reference&quot;&gt;&lt;a href=&quot;#3&quot;&gt;3&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;An invocation requests, on the other hand, follows this path:&lt;&#x2F;p&gt;
+&lt;ol start=&quot;5&quot;&gt;
+&lt;li&gt;
+&lt;p&gt;The user sends an invocation request for a function&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;The Core retrieves the function definition from the database&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;The Core selects a Worker to run the function, and forwards to it the invocation request&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;The Worker searches its cache for the function&#x27;s code&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;At this point, the execution branches in two different cases:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;9a: The function&#x27;s code is found. The Worker runs the function, and returns its result to the Core. The workflow terminates here.&lt;&#x2F;li&gt;
+&lt;li&gt;9b: The function&#x27;s code is not found locally. The Worker sends a &amp;quot;no code&amp;quot; message to the Core&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;If the &amp;quot;b&amp;quot; path was taken in step 9, the request proceeds:&lt;&#x2F;p&gt;
+&lt;ol start=&quot;10&quot;&gt;
+&lt;li&gt;The Core sends the same request as before to the Worker, adding the function&#x27;s code this time&lt;&#x2F;li&gt;
+&lt;li&gt;The Worker caches the function&#x27;s code, after a pre-compilation phase&lt;sup class=&quot;footnote-reference&quot;&gt;&lt;a href=&quot;#3&quot;&gt;3&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt; (more on that on the &lt;a href=&quot;..&#x2F;worker&quot;&gt;Worker&lt;&#x2F;a&gt; description)&lt;&#x2F;li&gt;
+&lt;li&gt;The Worker runs the function, and returns its result to the Core. The workflow terminates here.&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;note-on-connectivity&quot;&gt;Note on connectivity&lt;&#x2F;h3&gt;
+&lt;p&gt;As of right now, FunLess relies on the &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;bitwalker&#x2F;libcluster&quot;&gt;libcluster&lt;&#x2F;a&gt; library to automatically connect all nodes in a single cluster, whether on top of an orchestrator or not. That being said, it is still possible to manually connect nodes to the cluster using the &lt;code&gt;Node.connect&lt;&#x2F;code&gt; function of the Elixir language. The nodes must be visible to each other &lt;strong&gt;without NAT&lt;&#x2F;strong&gt; to ensure the communication works&lt;sup class=&quot;footnote-reference&quot;&gt;&lt;a href=&quot;#4&quot;&gt;4&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt;.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;div class=&quot;footnote-definition&quot; id=&quot;1&quot;&gt;&lt;sup class=&quot;footnote-definition-label&quot;&gt;1&lt;&#x2F;sup&gt;
+&lt;p&gt;At the time of writing, FunLess only supports single-Core deployments. Support for multiple cores is being worked on. In such deployments, both the database and the metric system would probably be replicated and co-located with each Core instance.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;footnote-definition&quot; id=&quot;2&quot;&gt;&lt;sup class=&quot;footnote-definition-label&quot;&gt;2&lt;&#x2F;sup&gt;
+&lt;p&gt;FunLess does not currently support multi-tenancy, therefore the database only contains information about functions and modules. User information will be handled generally in the same way.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;footnote-definition&quot; id=&quot;3&quot;&gt;&lt;sup class=&quot;footnote-definition-label&quot;&gt;3&lt;&#x2F;sup&gt;
+&lt;p&gt;For simplicity, the distinction between storing the code as-is and cache the pre-compiled code is not shown in the diagram. In case the pre-compiled code is not found, but the &amp;quot;raw&amp;quot; code is already in storage, the Worker simply performs the pre-compilation step and caches the result, without talking to the Core. The &amp;quot;raw&amp;quot; code is never used for function invocation, only the pre-compiled version is.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;footnote-definition&quot; id=&quot;4&quot;&gt;&lt;sup class=&quot;footnote-definition-label&quot;&gt;4&lt;&#x2F;sup&gt;
+&lt;p&gt;A more thorough guide on how to configure the network and deploy FunLess without an orchestrator can be found &lt;a href=&quot;..&#x2F;..&#x2F;getting-started&#x2F;bare-metal&quot;&gt;here&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Worker</title>
+        <published>2024-05-06T08:20:00+00:00</published>
+        <updated>2021-05-01T08:20:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://funless.dev/docs/architecture/worker/"/>
+        <id>https://funless.dev/docs/architecture/worker/</id>
+        
+        <content type="html" xml:base="https://funless.dev/docs/architecture/worker/">&lt;p&gt;The Worker is the main function executor of the FunLess platform. In a standard deployment, there normally are as many Workers as the total number of nodes (potentially minus one, if the Core node is not used as an executor).&lt;&#x2F;p&gt;
+&lt;p&gt;Each Worker embeds a WebAssembly runtime (currently &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;bytecodealliance&#x2F;wasmtime&quot;&gt;Wasmtime&lt;&#x2F;a&gt;), to instantiate and run functions. Each function is a WebAssembly module, with the addition of the several imports&#x2F;exports (see below).&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;funless-compatible-webassembly-modules&quot;&gt;FunLess-compatible WebAssembly modules&lt;&#x2F;h3&gt;
+&lt;p&gt;As of right now, standard WebAssembly modules are not runnable by FunLess (and vice-versa, FunLess-compatible modules are not runnable by standalone runtimes), because of several requirements in terms of imported and exported functions. We list here the required imports&#x2F;exports the module must satisfy.&lt;&#x2F;p&gt;
+&lt;p&gt;To produce FunLess-compatible modules, we currently use language-specific wrappers, which can be found in a dedicated &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;funlessdev&#x2F;fl-wasm&quot;&gt;repository&lt;&#x2F;a&gt;. This approach is subject to change and we plan on greatly improving the usability of the platform, by integrating the building process with our CLI and increasing compatibility with standard WebAssembly modules.&lt;&#x2F;p&gt;
+&lt;h4 id=&quot;imported-functions&quot;&gt;Imported functions&lt;&#x2F;h4&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;__get_input_data&lt;&#x2F;code&gt; asks the runtime to write the input data to memory. It takes a single integer as input, representing the pointer where the data will be written.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;__insert_response&lt;&#x2F;code&gt; inserts the function&#x27;s response in memory. It takes two integers as input, representing the pointer to the response, and its length.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;__insert_error&lt;&#x2F;code&gt; same as &lt;code&gt;__insert_response&lt;&#x2F;code&gt;, used in case the function encountered an error.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;__http_request&lt;&#x2F;code&gt; performs an HTTP request, with a JSON body and a JSON response. Takes several parameters, in the following order:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;pointer to the response and pointer to its length, which will be populated by the runtime after the request is performed&lt;&#x2F;li&gt;
+&lt;li&gt;pointer to the status, also populated by the runtime&lt;&#x2F;li&gt;
+&lt;li&gt;method (an integer from 0 to 3, representing &lt;code&gt;GET&lt;&#x2F;code&gt;, &lt;code&gt;POST&lt;&#x2F;code&gt;, &lt;code&gt;PUT&lt;&#x2F;code&gt; and &lt;code&gt;DELETE&lt;&#x2F;code&gt; in this order)&lt;&#x2F;li&gt;
+&lt;li&gt;pointer and length of the URL&lt;&#x2F;li&gt;
+&lt;li&gt;pointer and length of the headers, codified as a string&lt;&#x2F;li&gt;
+&lt;li&gt;pointer and length of the body&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;This function will probably be scrapped, as the WASI standard has recenly included HTTP requests and socket operations, so there will be no need for a custom import.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;__console_log&lt;&#x2F;code&gt; is a debugging function, to be removed in the future (or at least disabled in production environments). Prints the given string (identified by two integers, a pointer to the message and its length) as a debugging log on the Worker. &lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h4 id=&quot;exported-functions&quot;&gt;Exported functions&lt;&#x2F;h4&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;__invoke&lt;&#x2F;code&gt; is used by FunLess to actually run the module. This function basically extracts the input from memory using &lt;code&gt;__get_input_data&lt;&#x2F;code&gt;, runs the &lt;code&gt;main&lt;&#x2F;code&gt; function (or its equivalent) in the given language, and inserts the results in memory using &lt;code&gt;__insert_response&lt;&#x2F;code&gt; or &lt;code&gt;__insert_error&lt;&#x2F;code&gt;. &lt;code&gt;__invoke&lt;&#x2F;code&gt; takes a single integer as argument, representing the length of the function&#x27;s input (generally stringified JSON).&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;When loading the input data, the general workflow is:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;initialize an array of length &lt;code&gt;N&lt;&#x2F;code&gt;, where &lt;code&gt;N&lt;&#x2F;code&gt; is the parameter passed to &lt;code&gt;__invoke&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;call &lt;code&gt;__get_input_data&lt;&#x2F;code&gt; with a pointer to the array&lt;&#x2F;li&gt;
+&lt;li&gt;parse the array as a string&lt;&#x2F;li&gt;
+&lt;li&gt;pass the string to the &lt;code&gt;main&lt;&#x2F;code&gt; function (the actual user-defined function)&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;code&gt;__invoke&lt;&#x2F;code&gt; also returns either 0 or 1, for success and failure respectively, after having called &lt;code&gt;__insert_response&lt;&#x2F;code&gt; (or &lt;code&gt;__insert_error&lt;&#x2F;code&gt;).&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>How to Contribute</title>
+        <published>2021-05-01T18:10:00+00:00</published>
+        <updated>2021-05-01T18:10:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://funless.dev/docs/contributing/how-to-contribute/"/>
+        <id>https://funless.dev/docs/contributing/how-to-contribute/</id>
+        
+        <content type="html" xml:base="https://funless.dev/docs/contributing/how-to-contribute/">&lt;h2 id=&quot;contribute-to-funless&quot;&gt;Contribute to FunLess&lt;&#x2F;h2&gt;
+&lt;p&gt;👉 The FunLess code lives in the &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;funlessdev&#x2F;&quot;&gt;&lt;code&gt;funlessdev&lt;&#x2F;code&gt; organization&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;We have several repositories for the different parts of the system, with a lot of stuff to do.&lt;&#x2F;p&gt;
+&lt;p&gt;If you want to partecipate and have fun with Elixir, Rust, Go, WebAssembly and Serverless you are very welcome!&lt;&#x2F;p&gt;
+&lt;p&gt;You can contribute in many different ways. Either help us design the system, contribute code, open issues, write documentation 
+or just use FunLess for something!&lt;&#x2F;p&gt;
+&lt;p&gt;Our workflow is to fork a repo, work on it and open a Pull Request. Each PR has to pass all the checks and have at least 1 approval 
+from a reviewer. &lt;&#x2F;p&gt;
+&lt;p&gt;The way to get started is opening issues:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;If you want to work on something or have any comments, just open an issue on the &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;funlessdev&#x2F;funless&quot;&gt;main repo&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;If it is related to the cli and Go ---&amp;gt; &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;funlessdev&#x2F;fl-cli&quot;&gt;repo here&lt;&#x2F;a&gt;. &lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;If you want to add docs and content to this website ---&amp;gt; &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;funlessdev&#x2F;fl-website&quot;&gt;repo here&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Roadmap</title>
+        <published>2021-05-01T18:10:00+00:00</published>
+        <updated>2021-05-01T18:10:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://funless.dev/docs/roadmap/roadmap/"/>
+        <id>https://funless.dev/docs/roadmap/roadmap/</id>
+        
+        <content type="html" xml:base="https://funless.dev/docs/roadmap/roadmap/">&lt;h2 id=&quot;2023-roadmap&quot;&gt;2023 Roadmap&lt;&#x2F;h2&gt;
+&lt;p&gt;These are the expected milestones for this year. 
+The plan is subject to change as this is still an experimental platform, 
+the purpose of which is first and foremost to assist in our research work. 
+Because of this, usability and frontend-focused additions may fall behind in priority compared to research-driven features 
+(e.g. scheduling optimization).&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;q1&quot;&gt;Q1&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+Authentication &amp;amp; Authorization&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+HTTP requests from wasm functions&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+Functional Kubernetes deployment&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+Benchmarks and comparison with other OSS serverless platforms&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+Small slack bot demo&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;q2&quot;&gt;Q2&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+Topology-aware scheduling&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+Multi-core deployments with reverse-proxy&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+Nats connector&#x2F;data sink&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+OpenTelemetry integration setup&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+Helm chart&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+Benchmarks with multi-core scenarios&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;q3&quot;&gt;Q3&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+Custom scheduling policies&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+Web functions&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+Function workflows&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+Kafka connector&#x2F;data sink&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+More OpenTelemetry&#x2F;Metrics &lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+Bare-metal deployment with ansible&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+Small web functions demo&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;q4&quot;&gt;Q4&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+Admin &amp;amp; Playground interface&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+Wasm functions registry&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+Utility library to develop functions&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+Nomad deployment&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+Support more languages&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+Postgres connector&#x2F;data-sink&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;input disabled=&quot;&quot; type=&quot;checkbox&quot;&#x2F;&gt;
+Web site demo made with FunLess&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;beyond&quot;&gt;Beyond&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Low-Code platform&lt;&#x2F;li&gt;
+&lt;li&gt;More connectors&#x2F;data-sinks (Amazon S3, MySql, Google Cloud Storage...)&lt;&#x2F;li&gt;
+&lt;li&gt;Better Kubernetes integration with CRDs&#x2F;Secrets&#x2F;etc&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Quick Start</title>
+        <published>2021-05-01T08:20:00+00:00</published>
+        <updated>2021-05-01T08:20:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://funless.dev/docs/getting-started/quick-start/"/>
+        <id>https://funless.dev/docs/getting-started/quick-start/</id>
+        
+        <content type="html" xml:base="https://funless.dev/docs/getting-started/quick-start/">&lt;h2 id=&quot;install-the-cli&quot;&gt;Install the CLI&lt;&#x2F;h2&gt;
+&lt;p&gt;To start hacking with FunLess, all you need is the CLI tool: &lt;a href=&quot;https:&#x2F;&#x2F;www.github.com&#x2F;funlessdev&#x2F;fl-cli&quot;&gt;fl&lt;&#x2F;a&gt;. &lt;&#x2F;p&gt;
+&lt;p&gt;You can check out the &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;funlessdev&#x2F;fl-cli&#x2F;releases&quot;&gt;Releases page&lt;&#x2F;a&gt; and download the most recent one based on your system
+(Windows is not currently supported although there is a build for it).&lt;&#x2F;p&gt;
+&lt;p&gt;Here are some quick links to download it:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;funlessdev&#x2F;fl-cli&#x2F;releases&#x2F;download&#x2F;v0.3.0&#x2F;fl-v0.3.0-linux-amd64.tar.gz&quot;&gt;Linux amd64&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;funlessdev&#x2F;fl-cli&#x2F;releases&#x2F;download&#x2F;v0.3.0&#x2F;fl-v0.3.0-linux-arm64.tar.gz&quot;&gt;Linux arm64&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;funlessdev&#x2F;fl-cli&#x2F;releases&#x2F;download&#x2F;v0.3.0&#x2F;fl-v0.3.0-darwin-amd64.tar.gz&quot;&gt;Mac amd64&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;funlessdev&#x2F;fl-cli&#x2F;releases&#x2F;download&#x2F;v0.3.0&#x2F;fl-v0.3.0-darwin-arm64.tar.gz&quot;&gt;Mac arm64&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Extract the executable from the archive and you can start using fl.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;deploy-funless-locally&quot;&gt;Deploy FunLess Locally&lt;&#x2F;h2&gt;
+&lt;p&gt;⚠️ You need to have &lt;a href=&quot;https:&#x2F;&#x2F;docs.docker.com&#x2F;get-docker&#x2F;&quot;&gt;Docker&lt;&#x2F;a&gt; installed for this! ⚠️&lt;&#x2F;p&gt;
+&lt;p&gt;You can use the CLI tool to deploy the platform locally using Docker containers. 
+It uses &lt;code&gt;docker compose&lt;&#x2F;code&gt; internally so it&#x27;s a hard requirement to have a recent version of Docker.&lt;&#x2F;p&gt;
+&lt;p&gt;The CLI will pull and launch 4 containers, one for the &lt;strong&gt;Core&lt;&#x2F;strong&gt; component, one for the &lt;strong&gt;Worker&lt;&#x2F;strong&gt;, one for &lt;strong&gt;Prometheus&lt;&#x2F;strong&gt; and one for &lt;strong&gt;Postgres&lt;&#x2F;strong&gt;. 
+You can remove everything using the cli again.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;fl&lt;&#x2F;span&gt;&lt;span&gt; admin deploy docker up
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;!-- &lt;img src=&quot;.&#x2F;img&#x2F;docker_up.gif&quot; style=&quot;width: 100%;&quot; &#x2F;&gt; --&gt;
+&lt;p&gt;Now that FunLess is running, you can start deploying and running functions.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;create-a-function&quot;&gt;Create a function&lt;&#x2F;h2&gt;
+&lt;p&gt;FunLess uses &lt;a href=&quot;https:&#x2F;&#x2F;webassembly.org&#x2F;&quot;&gt;WebAssembly&lt;&#x2F;a&gt; runtimes via &lt;a href=&quot;https:&#x2F;&#x2F;wasmtime.dev&#x2F;&quot;&gt;Wasmtime&lt;&#x2F;a&gt; to run your functions.
+As of now we support &lt;em&gt;Rust&lt;&#x2F;em&gt; and &lt;em&gt;JavaScript&lt;&#x2F;em&gt;, but we are working on adding more languages.&lt;&#x2F;p&gt;
+&lt;p&gt;The CLI tool already handles the compiling into WebAssembly for you, so you can focus on writing your functions.&lt;&#x2F;p&gt;
+&lt;p&gt;For example, let&#x27;s create a new function using the &lt;code&gt;fn new&lt;&#x2F;code&gt; cli command. We will use Rust. From a folder of your choosing, run:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;fl&lt;&#x2F;span&gt;&lt;span&gt; fn new hello_funless&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -l&lt;&#x2F;span&gt;&lt;span&gt; rust
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;!-- &lt;img src=&quot;.&#x2F;img&#x2F;fl_new_hello.gif&quot; style=&quot;width: 100%;&quot; &#x2F;&gt; --&gt;
+&lt;p&gt;This will download the template folder which contains the Rust and Javascript templates, and use the Rust template
+to create a new project named hello. The folder hello will contain a Cargo.toml and a lib.rs with the &lt;code&gt;fl_main&lt;&#x2F;code&gt; function, 
+which you can fill with your code.&lt;&#x2F;p&gt;
+&lt;p&gt;The template function takes a json of the form &lt;code&gt;{&amp;quot;name&amp;quot;: &amp;quot;FunLess&amp;quot;}&lt;&#x2F;code&gt; and returns a &lt;code&gt;{&amp;quot;payload&amp;quot;: &amp;quot;Hello FunLess&amp;quot;}&lt;&#x2F;code&gt;. You can change it to your liking.&lt;&#x2F;p&gt;
+&lt;p&gt;Now you can build and deploy it to FunLess. The &lt;code&gt;create&lt;&#x2F;code&gt; subcommand will take care of both building and uploading.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;fl&lt;&#x2F;span&gt;&lt;span&gt; fn create hello hello&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --language&lt;&#x2F;span&gt;&lt;span&gt; rust
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The first argument of the create subcommand is the name of the function inside FunLess, the second is the path to the directory with the code. There are other commands like &lt;code&gt;build&lt;&#x2F;code&gt; that only builds the wasm file and saves it, &lt;code&gt;upload&lt;&#x2F;code&gt; that takes a wasm file and uses it to create a function in the platform. The &lt;code&gt;create&lt;&#x2F;code&gt; command is a combination of both, but after the function creation it deletes the wasm file so your pc stays clean. At last the &lt;code&gt;--language&lt;&#x2F;code&gt; is the programming language of the code.&lt;&#x2F;p&gt;
+&lt;p&gt;In FunLess  each &lt;code&gt;function&lt;&#x2F;code&gt; is part of a &lt;code&gt;module&lt;&#x2F;code&gt; (you can think of them as namespaces from the C family of languages, or packages). 
+Every FunLess instance has a default &lt;code&gt;_&lt;&#x2F;code&gt; module, so if you don&#x27;t create a new module (with the &lt;code&gt;mod&lt;&#x2F;code&gt; subcommand) and specify it when creating functions, they will be created in the &lt;code&gt;_&lt;&#x2F;code&gt; module. You can get info about a module with its list of function with:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;fl&lt;&#x2F;span&gt;&lt;span&gt; mod get _
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;!-- &lt;img src=&quot;.&#x2F;img&#x2F;fl_create.gif&quot; style=&quot;width: 100%;&quot; &#x2F;&gt; --&gt;
+&lt;h2 id=&quot;invoke-it&quot;&gt;Invoke it&lt;&#x2F;h2&gt;
+&lt;p&gt;Now you can invoke it. Since the function takes a json argument, you can use the &lt;code&gt;-j&lt;&#x2F;code&gt; flag to pass the JSON object with the &#x27;name&#x27; key as input: &lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;fl&lt;&#x2F;span&gt;&lt;span&gt; fn invoke hello&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -j &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;{&amp;quot;name&amp;quot;: &amp;quot;FunLess&amp;quot;}&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;If everything worked correctly, the invocation request will be received by the core component, passed to the worker componend and the wasm
+function will be executed. The result will be returned to the core component and then to the CLI, which will print it to the console.&lt;&#x2F;p&gt;
+&lt;!-- &lt;img src=&quot;.&#x2F;img&#x2F;fl_invoke.gif&quot; style=&quot;width: 100%;&quot; &#x2F;&gt; --&gt;
+&lt;h2 id=&quot;delete-it&quot;&gt;Delete it&lt;&#x2F;h2&gt;
+&lt;p&gt;You can delete the function with:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;fl&lt;&#x2F;span&gt;&lt;span&gt; fn delete hello 
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;cleaning-up&quot;&gt;Cleaning up&lt;&#x2F;h2&gt;
+&lt;p&gt;When you are done, you can remove the containers and cleanup the dev deployment with:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;fl&lt;&#x2F;span&gt;&lt;span&gt; admin docker deploy down
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;!-- &lt;img src=&quot;.&#x2F;img&#x2F;docker_down.gif&quot; style=&quot;width: 100%;&quot; &#x2F;&gt; --&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Running FunLess without orchestrators</title>
+        <published>2021-05-01T08:00:00+00:00</published>
+        <updated>2021-05-01T08:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://funless.dev/docs/getting-started/bare-metal/"/>
+        <id>https://funless.dev/docs/getting-started/bare-metal/</id>
+        
+        <content type="html" xml:base="https://funless.dev/docs/getting-started/bare-metal/"></content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Introduction</title>
+        <published>2021-05-01T08:00:00+00:00</published>
+        <updated>2021-05-01T08:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://funless.dev/docs/getting-started/introduction/"/>
+        <id>https://funless.dev/docs/getting-started/introduction/</id>
+        
+        <content type="html" xml:base="https://funless.dev/docs/getting-started/introduction/">&lt;p&gt;FunLess includes capabilities for building and deploying applications from source, composed of stateless functions, that can scale automatically. Connect events from external systems that can trigger function invocations and create workflows by pipelining your functions. &lt;&#x2F;p&gt;
+&lt;p&gt;All of this easily deployed over Kubernetes or Nomad, or standalone, with the simple-to-use command line tool.&lt;&#x2F;p&gt;
+&lt;p&gt;Under the hood, FunLess takes advantage of several modern technologies like Elixir, Rust and WebAssembly to provide a light, secure and fast experience to run your serverless applications.&lt;&#x2F;p&gt;
+&lt;p&gt;Our goal is to provide a new FaaS platform to take advantage of modern technologies, ease of deployment and learn new things!&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;getting-started&quot;&gt;Getting Started&lt;&#x2F;h2&gt;
+&lt;p&gt;To get started with FunLess, follow our &lt;a href=&quot;..&#x2F;quick-start&#x2F;&quot;&gt;Quick Start →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;project-status&quot;&gt;Project Status&lt;&#x2F;h2&gt;
+&lt;p&gt;FunLess is experimental code, however it is deployable locally for you to try out and provide feedback or contribute. 
+There is still a ton of work to do, but it is taking shape and we are excited to share it with you. We plan
+to have the best Cloud-Edge serverless platform out there, so any help is welcome!&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;contributing&quot;&gt;Contributing&lt;&#x2F;h2&gt;
+&lt;p&gt;Find out how to contribute to FunLess. &lt;a href=&quot;..&#x2F;..&#x2F;contributing&#x2F;how-to-contribute&#x2F;&quot;&gt;Contributing →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;about-the-team&quot;&gt;About the Team&lt;&#x2F;h2&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Running on Kubernetes</title>
+        <published>2021-05-01T08:00:00+00:00</published>
+        <updated>2021-05-01T08:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://funless.dev/docs/getting-started/kubernetes/"/>
+        <id>https://funless.dev/docs/getting-started/kubernetes/</id>
+        
+        <content type="html" xml:base="https://funless.dev/docs/getting-started/kubernetes/"></content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Running on Nomad</title>
+        <published>2021-05-01T08:00:00+00:00</published>
+        <updated>2021-05-01T08:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://funless.dev/docs/getting-started/nomad/"/>
+        <id>https://funless.dev/docs/getting-started/nomad/</id>
+        
+        <content type="html" xml:base="https://funless.dev/docs/getting-started/nomad/">&lt;p&gt;TBD&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Giuseppe De Palma</title>
+        <published>2021-04-01T08:50:45+00:00</published>
+        <updated>2021-04-01T08:50:45+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://funless.dev/authors/giuseppe-de-palma/"/>
+        <id>https://funless.dev/authors/giuseppe-de-palma/</id>
+        
+        <content type="html" xml:base="https://funless.dev/authors/giuseppe-de-palma/">&lt;p&gt;Creator of &lt;strong&gt;funless&lt;&#x2F;strong&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;giusdp&quot;&gt;@giusdp&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Matteo Trentin</title>
+        <published>2021-04-01T08:50:45+00:00</published>
+        <updated>2021-04-01T08:50:45+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://funless.dev/authors/matteo-trentin/"/>
+        <id>https://funless.dev/authors/matteo-trentin/</id>
+        
+        <content type="html" xml:base="https://funless.dev/authors/matteo-trentin/">&lt;p&gt;Creator of &lt;strong&gt;funless&lt;&#x2F;strong&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mattrent&quot;&gt;@mattrent&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
